@@ -17,11 +17,8 @@ var myRound10 = function (val) {
 
 // функция создания случайного массива
 var randLengthArr = function (valArr) {
-  var randArr = [];
-  for (var i = 0; i < selfRandom(0, valArr.length - 1); i++) {
-    randArr[i] = valArr[selfRandom(0, valArr.length - 1)];
-  }
-  return randArr;
+  var newArray = valArr.slice(0, selfRandom(1, valArr.length - 1));
+  return newArray;
 };
 
 // получаем размеры
@@ -33,6 +30,8 @@ var areaSize = function (className) {
 
   return sizesArr;
 };
+
+var mapAreaWidth = areaSize('map__pins')[0];
 
 var advertArr = function (types, times, features, photos) {
   var adverts = [];
@@ -55,10 +54,10 @@ var advertArr = function (types, times, features, photos) {
       },
 
       'location': {
-        'x': selfRandom(0, areaSize('map__pins')[0]), // случайное число, координата x метки на карте. Значение ограничено размерами блока, в котором перетаскивается метка.
+        'x': selfRandom(0, mapAreaWidth), // случайное число, координата x метки на карте. Значение ограничено размерами блока, в котором перетаскивается метка.
         'y': selfRandom(130, 630) // случайное число, координата y метки на карте от 130 до 630.
       }
-    }
+    };
   }
   return adverts;
 };
@@ -71,21 +70,25 @@ userDialog.classList.remove('map--faded');
 var advertArrTempIn = userDialog.querySelector('.map__pins');
 var advertArrTemp = document.querySelector('#pin').content.querySelector('.map__pin');
 
-var renderPin = function (workArr) {
+// eslint-disable-next-line no-shadow
+var renderPin = function (workArr) { // в целом у меня с этой функцией траблы - работает только когда в аргументе - реальный массив, все попыткаи написать по другому фейлятся(
   var pinElement = advertArrTemp.cloneNode(true);
 
-  console.log(pinElement);
-    pinElement.querySelector('img').src = workArr.author.avatar;
-    pinElement.querySelector('img').alt = workArr.offer.title;
-    pinElement.setAttribute('style', 'left:' + (workArr.location.x - 20) +  'px; top: ' + (workArr.location.y - 40) + 'px;');
+  pinElement.querySelector('img').src = workArr.author.avatar;
+  pinElement.querySelector('img').alt = workArr.offer.title;
+  pinElement.setAttribute('style', 'left:' + (workArr.location.x - 20) + 'px; top: ' + (workArr.location.y - 40) + 'px;');
 
   return pinElement;
 };
 
-var fragment = document.createDocumentFragment();
-for (var i = 0; i < workArr.length; i++) {
-  fragment.appendChild(renderPin(workArr[i]));
-}
-advertArrTempIn.appendChild(fragment);
+var drawPins = function () {
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < workArr.length; i++) {
+    fragment.appendChild(renderPin(workArr[i]));
+  }
+  return fragment;
+};
+
+advertArrTempIn.appendChild(drawPins());
 
 
